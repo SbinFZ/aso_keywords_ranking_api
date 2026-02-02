@@ -1,5 +1,15 @@
 # App Store Keyword Ranking & Analysis Service
 
+> A professional toolset for App Store (ASO) keyword research, popularity analysis, and ranking monitoring.
+
+![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
+![FastAPI](https://img.shields.io/badge/FastAPI-Framework-green.svg)
+![License](https://img.shields.io/badge/license-MIT-red.svg)
+
+**Keywords:** `aso`, `app-store`, `keyword-research`, `app-ranking`, `itunes-api`, `fastapi`
+
+---
+
 这是一个用于 App Store 关键词挖掘、热度分析和排名监控的工具集。它基于 Apple 官方接口，能够帮助 ASO (App Store Optimization) 团队快速评估关键词价值，监控自家应用在特定关键词下的排名表现。
 
 ## 核心功能
