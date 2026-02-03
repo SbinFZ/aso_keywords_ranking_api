@@ -89,6 +89,82 @@ uvicorn app.main:app --reload --port 8000
 *   **热度查询:** `GET /v1/keywords/popularity?keyword=tiktok&country=US`
 *   **联想词:** `GET /v1/keywords/hints?keyword=chat`
 
+> `popularity` 返回中新增了辅助字段：`priority_raw`、`priority_is_estimated`、`score_method`、`match_type`，用于区分官方值与估算值。
+
+## 新增接口
+
+### iTunes Search API
+
+*   **搜索:** `GET /v1/itunes/search?term=math&country=US&limit=50`
+*   **Lookup:** `GET /v1/itunes/lookup?id=123456789&country=US`
+
+### App Store RSS（Top Charts）
+
+*   **Top Free:** `GET /v1/appstore/rss?country=us&feed=top-free&limit=10`
+*   **Top Paid:** `GET /v1/appstore/rss?country=us&feed=top-paid&limit=10`
+*   **Top Grossing:** `GET /v1/appstore/rss?country=us&feed=top-grossing&limit=10`
+*   `limit` 仅支持 `10/25/50`
+
+### Apple Search Ads（ASA）
+
+*   **通用请求:** `POST /v1/asa/request`
+    *   Header: `Authorization: Bearer <access_token>`
+    *   Body 示例：
+        ```json
+        {
+          "path": "/api/v5/me",
+          "method": "GET"
+        }
+        ```
+    *   也可通过环境变量 `ASA_ACCESS_TOKEN` 提供默认授权
+
+## 性能与更新策略
+
+为提升**速度**并避免频繁触发上游限流，服务默认启用**内存缓存**（TTL 5 分钟）。如果你需要强制获取**最新**数据，可在请求中加入 `fresh=true` 以绕过缓存。
+
+**示例：**
+*   `GET /v1/keywords/hints?keyword=chat&country=US&fresh=true`
+*   `GET /v1/keywords/trends?country=US&fresh=true`
+
+此外，你可以通过 `include_raw=false` 返回更轻量的响应，减少带宽与解析开销。
+
+### 可用环境变量
+
+*   `APPSTORE_CACHE_ENABLED` (默认 `1`)：是否启用缓存
+*   `APPSTORE_CACHE_TTL_HINTS` (默认 `300`)：Hints 缓存秒数
+*   `APPSTORE_CACHE_TTL_TRENDS` (默认 `300`)：Trends 缓存秒数
+*   `APPSTORE_CACHE_TTL_POPULARITY` (默认 `300`)：Popularity 缓存秒数
+*   `APPSTORE_CACHE_TTL_SEARCH` (默认 `300`)：Search Rank 缓存秒数
+*   `APPSTORE_CACHE_TTL_ITUNES_SEARCH` (默认 `300`)：iTunes Search 缓存秒数
+*   `APPSTORE_CACHE_TTL_ITUNES_LOOKUP` (默认 `300`)：iTunes Lookup 缓存秒数
+*   `APPSTORE_CACHE_TTL_RSS` (默认 `300`)：App Store RSS 缓存秒数
+*   `APPSTORE_HTTP_RETRIES` (默认 `2`)：上游重试次数
+*   `APPSTORE_HTTP_BACKOFF` (默认 `0.3`)：重试基础退避秒数
+*   `APPSTORE_HTTP_TIMEOUT` (默认 `10`)：请求超时时间
+*   `APPSTORE_CONNECT_TIMEOUT` / `APPSTORE_POOL_TIMEOUT`：连接与连接池超时
+*   `APPSTORE_MAX_CONNECTIONS` / `APPSTORE_MAX_KEEPALIVE`：连接池大小
+*   `APPSTORE_HTTP2` (默认 `0`)：是否启用 HTTP/2（需安装 httpx 的 http2 依赖）
+*   `APPSTORE_ACCEPT_LANGUAGE`：强制指定 Accept-Language
+*   `ASA_BASE_URL`：ASA API Base URL（默认值见代码）
+*   `ASA_ACCESS_TOKEN`：ASA API 访问令牌（可选，用于默认授权）
+
+## Docker 一键启动
+
+```bash
+docker compose up --build
+```
+
+启动后访问：`http://127.0.0.1:8000/docs`
+
+## Makefile 一键启动（macOS）
+
+```bash
+make install
+make run
+```
+
+更详细说明见：`docs/README_macos.md`
+
 ## 常见问题
 
 *   **Q: 为什么 Priority 有时候是 0？**

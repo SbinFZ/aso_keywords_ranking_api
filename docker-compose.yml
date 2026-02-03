@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  aso-api:
+    build: .
+    container_name: aso-keywords-api
+    ports:
+      - "8000:8000"
+    environment:
+      APPSTORE_CACHE_ENABLED: "1"
+      APPSTORE_CACHE_TTL_HINTS: "300"
+      APPSTORE_CACHE_TTL_TRENDS: "300"
+      APPSTORE_CACHE_TTL_POPULARITY: "300"
+      APPSTORE_CACHE_TTL_ITUNES_SEARCH: "300"
+      APPSTORE_CACHE_TTL_ITUNES_LOOKUP: "300"
+      APPSTORE_CACHE_TTL_RSS: "300"
+      APPSTORE_HTTP_RETRIES: "2"
+      APPSTORE_HTTP_BACKOFF: "0.3"
